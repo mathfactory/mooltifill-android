@@ -28,14 +28,19 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.view.autofill.AutofillManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.*
 import kotlinx.coroutines.*
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -44,6 +49,8 @@ class SettingsActivity : AppCompatActivity() {
         fun isDebugEnabled(context: Context): Boolean = parsedIntSetting(context, "debug_level", 0) > 0
         fun isDebugVerbose(context: Context): Boolean = parsedIntSetting(context, "debug_level", 0) > 1
         fun isAwarenessEnabled(context: Context): Boolean = booleanSetting(context, "awareness", true)
+        fun pwgenLength(context: Context): Int = parsedIntSetting(context, "pwgen_length", 12) // TODO no hardcoded default
+        fun pwgenChset(context: Context): String? = stringSetting(context, "pwgen_chset", context.getString(R.string.default_pwgen_chset))
 
         private fun <T> castChecked(block: () -> T): T? =
             try { block() } catch(e: ClassCastException) { null }
@@ -180,6 +187,52 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 true
             }
+            findPreference<Preference>("pwgen_cmd")?.setOnPreferenceClickListener {
+                showPwGenDialog { service, login, password ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        MooltifillActivity.setCredentials(requireContext(), service, login, password)
+                    }
+                }
+                true
+            }
+        }
+
+        private fun showPwGenDialog(block: (String, String, String) -> Unit) {
+            val ctx = requireContext()
+            val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+            builder.setTitle("Password Generator")
+            val viewInflated =
+                LayoutInflater.from(context).inflate(R.layout.pwgen_dialog, view as ViewGroup?, false)
+
+            builder.setView(viewInflated)
+
+            builder.setPositiveButton("Generate") { _, _ ->
+                val service = viewInflated.findViewById<EditText>(R.id.pwgen_service).text.toString()
+                val login = viewInflated.findViewById<EditText>(R.id.pwgen_login).text.toString()
+                val pw = generatePassword()
+                if (service.isNotBlank() && login.isNotBlank() && !pw.isNullOrBlank()) {
+                    block(service, login, pw)
+                }
+            }
+            builder.setNegativeButton("Cancel") {
+                    dialog, _ -> dialog.cancel()
+            }
+
+            builder.show()
+        }
+
+        private fun generatePassword(): String? {
+            val ctx = requireContext()
+            val chset = pwgenChset(ctx)
+            val length = pwgenLength(ctx)
+            if(chset == null || chset.isEmpty() || length < 1) return null
+            val builder = StringBuilder()
+            for(i in 0 until length) {
+                val random = chset.indices.random()
+                val c = chset[random]
+                builder.append(c)
+            }
+            return builder.toString()
         }
 
         private fun hasEnabledMooltifill(context: Activity): Boolean {

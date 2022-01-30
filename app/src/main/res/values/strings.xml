@@ -9,5 +9,7 @@
     <string name="paranoia_title">Paranoia level</string>
     <string name="awareness_title">Mooltipass Device Status</string>
     <string name="default_awareness_message">Disconnected</string>
+    <string name="default_pwgen_chset">
+        <![CDATA[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%*-=+?_()&]]></string>
 
 </resources>
