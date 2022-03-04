@@ -1,0 +1,1 @@
+Use the Autofill service provided by android with this companion app for the Mooltipass BLE hardware authenticator (www.mymooltipass.com). You will need the corresponding hardware device (bluetooth edition) to use the app.
