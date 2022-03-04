@@ -64,4 +64,22 @@
             app:defaultValue="false" />
     </PreferenceCategory>
 
+    <PreferenceCategory
+    app:title="Password Generator">
+        <EditTextPreference
+            app:key="pwgen_chset"
+            app:title="Character Set"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/default_pwgen_chset"/>
+        <EditTextPreference
+            app:key="pwgen_length"
+            app:title="Length"
+            android:inputType="number"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="12"/>
+        <Preference
+            app:key="pwgen_cmd"
+            app:title="Generate Password"
+            app:summary="Generate password with the defined strategy, you will be asked for the service/login name in the next step." />
+    </PreferenceCategory>
 </PreferenceScreen>
