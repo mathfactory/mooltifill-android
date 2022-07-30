@@ -5,9 +5,11 @@
 
     <!-- Preference Titles -->
     <string name="settings_header">Main Settings</string>
+    <string name="device_settings_header">Device Settings</string>
 
     <string name="awareness_title">Mooltipass Device Status</string>
     <string name="default_awareness_message">Disconnected</string>
+    <string name="device_is_chosen">This device will be used</string>
     <string name="default_pwgen_chset">
         <![CDATA[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%*-=+?_()&]]></string>
 
